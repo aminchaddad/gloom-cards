@@ -8,8 +8,18 @@ const cardSource = {
 		return {
 			id: props.id,
 			index: props.index,
+			section: props.section,
+			card: props.card
 		}
 	},
+	endDrag(props, monitor) {
+		const item = monitor.getItem();
+		const dropResult = monitor.getDropResult();	
+
+		if ( dropResult?.section && dropResult.section !== item.section ) {
+			props.removeCard(item.section, item.index);
+		}
+	}
 }
 
 const cardTarget = {
@@ -19,6 +29,8 @@ const cardTarget = {
 		}
 		const dragIndex = monitor.getItem().index
 		const hoverIndex = props.index
+		const dragSection = monitor.getItem().section
+		const hoverSection = props.section
 
 		// Don't replace items with themselves
 		if (dragIndex === hoverIndex) {
@@ -53,13 +65,15 @@ const cardTarget = {
 		}
 
 		// Time to actually perform the action
-		props.moveCard(dragIndex, hoverIndex)
+		if ( dragSection === hoverSection ) {
+			props.moveCard(dragIndex, hoverIndex, dragSection)
 
-		// Note: we're mutating the monitor item here!
-		// Generally it's better to avoid mutations,
-		// but it's good here for the sake of performance
-		// to avoid expensive index searches.
-		monitor.getItem().index = hoverIndex
+			// Note: we're mutating the monitor item here!
+			// Generally it's better to avoid mutations,
+			// but it's good here for the sake of performance
+			// to avoid expensive index searches.
+			monitor.getItem().index = hoverIndex
+		}
 	}
 }
 
@@ -81,6 +95,7 @@ const Card = ({
 	character,
 	id,
 	index,
+	section,
 	showToggle,
 	visible,
 	toggleCard
@@ -93,7 +108,7 @@ const Card = ({
 					<input
 						type="checkbox"
 						checked={visible ? true : false}
-						onClick={() => toggleCard(index)}
+						onClick={() => toggleCard(index, section)}
 						/>
 				</label>
 			}

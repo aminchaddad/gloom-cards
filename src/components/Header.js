@@ -5,7 +5,6 @@ export const Header = ({
   switchCharacter,
   toggleEditing,
   editing,
-  cards,
   classes,
   character
 }) => (
@@ -24,10 +23,6 @@ export const Header = ({
     </div>
 
     <div className="edit-cards-panel">
-      {cards.reduce( (prev, card) => {
-        return card.visible ? prev + 1 : prev
-      }, 0)} of {cards.length}
-
       <span
         className="edit-cards"
         onClick={toggleEditing}
